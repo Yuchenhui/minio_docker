@@ -48,7 +48,8 @@ RUN echo 'replace github.com/minio/console => /srv/console' >> go.mod
 ENV GOPROXY=https://goproxy.cn,https://proxy.golang.org,direct
 RUN for i in 1 2 3 4 5; do go mod tidy && break || sleep 10; done
 
-# Build and install
+# Build and install (set MINIO_RELEASE to show correct version)
+ENV MINIO_RELEASE=RELEASE
 RUN make install
 
 # ============================================
