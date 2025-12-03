@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -eo pipefail
+source /usr/bin/entrypoint
+
+# 执行 container.d 中的初始化脚本
+for FILE in $(find /etc/container.d -type f -iname \*.sh | sort); do
+    source ${FILE}
+done
+
+echo "> starting minio service"
+
+# 如果有传入参数（来自 docker-compose command），使用传入的参数
+# 否则使用默认配置启动
+if [[ $# -gt 0 ]]; then
+    # docker-compose command: server /data --address :9000 --console-address :9001
+    exec su-exec minio minio "$@"
+else
+    # 默认启动方式（使用环境变量配置）
+    exec su-exec minio minio server "${MINIO_START_DIRECTORY}" \
+        --address "${MINIO_ADDRESS}" \
+        --console-address "${MINIO_CONSOLE_ADDRESS}"
+fi

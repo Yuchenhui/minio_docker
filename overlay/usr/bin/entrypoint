@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# entrypoint - 环境变量初始化脚本
+# 被 container 和 healthcheck 脚本 source
+
+set -eo pipefail
+
+# 执行 entrypoint.d 中的初始化脚本
+for FILE in $(find /etc/entrypoint.d -type f -iname \*.sh | sort); do
+    source ${FILE}
+done
